@@ -57,6 +57,8 @@ class ListCommand extends Command
 
         $table->setHeaderTitle(sprintf('[share: %s | path: %s | total files: %d]', $result->getShareName(), $result->getDirectoryPath(), $total));
         $table->render();
+
+        return 0;
     }
 
     private function addRow(Table $table, FileInfo $entry, ?string $path = null): void

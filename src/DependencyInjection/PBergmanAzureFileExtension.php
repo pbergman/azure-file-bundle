@@ -87,7 +87,7 @@ class PBergmanAzureFileExtension extends Extension
             ->register($def, FileApi::class)
             ->setArguments([
                 new Reference(SerializerInterface::class),
-                new Reference($clientName->toString()),
+                new Reference($clientName),
                 $auth,
                 $share,
             ]);

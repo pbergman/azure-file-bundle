@@ -35,5 +35,7 @@ class GetCommand extends Command
         }
 
         file_put_contents($input->getArgument('name'), (string)$api->getFile($input->getArgument('name')));
+
+        return 0;
     }
 }
