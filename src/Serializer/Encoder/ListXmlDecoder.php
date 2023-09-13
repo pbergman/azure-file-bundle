@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PBergman\AzureFileBundle\Serializer\Encoder;
+namespace PBergman\Bundle\AzureFileBundle\Serializer\Encoder;
 
 use Symfony\Component\Serializer\Encoder\ContextAwareDecoderInterface;
 use Symfony\Component\Serializer\Encoder\NormalizationAwareInterface;

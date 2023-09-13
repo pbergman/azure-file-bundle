@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PBergman\AzureFileBundle\Authorize;
+namespace PBergman\Bundle\AzureFileBundle\Authorize;
 
 // https://learn.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key#blob-queue-and-file-services-shared-key-lite-authorization
 class SharedKeyLiteAuthorizer implements RequestAuthorizeInterface

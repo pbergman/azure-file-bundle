@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace PBergman\AzureFileBundle\Command;
+namespace PBergman\Bundle\AzureFileBundle\Command;
 
-use PBergman\AzureFileBundle\RestApi\FileApi;
+use PBergman\Bundle\AzureFileBundle\RestApi\FileApi;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

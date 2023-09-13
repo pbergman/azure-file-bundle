@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PBergman\AzureFileBundle\Authorize;
+namespace PBergman\Bundle\AzureFileBundle\Authorize;
 
 interface RequestAuthorizeInterface
 {

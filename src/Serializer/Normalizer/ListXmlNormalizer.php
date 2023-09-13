@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace PBergman\AzureFileBundle\Serializer\Normalizer;
+namespace PBergman\Bundle\AzureFileBundle\Serializer\Normalizer;
 
-use PBergman\AzureFileBundle\Model\ListResult;
-use PBergman\AzureFileBundle\Serializer\Encoder\ListXmlDecoder;
+use PBergman\Bundle\AzureFileBundle\Model\ListResult;
+use PBergman\Bundle\AzureFileBundle\Serializer\Encoder\ListXmlDecoder;
 use Symfony\Component\Serializer\Normalizer\ContextAwareDenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 

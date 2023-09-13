@@ -1,15 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace PBergman\AzureFileBundle\Model;
+namespace PBergman\Bundle\AzureFileBundle\Model;
 
 use Symfony\Component\Serializer\Annotation\DiscriminatorMap;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 
 /**
  * @DiscriminatorMap(typeProperty="Type", mapping={
- *    "File"      = "PBergman\AzureFileBundle\Model\File",
- *    "Directory" = "PBergman\AzureFileBundle\Model\Directory"
+ *    "File"      = "PBergman\Bundle\AzureFileBundle\Model\File",
+ *    "Directory" = "PBergman\Bundle\AzureFileBundle\Model\Directory"
  * })
  */
 abstract class FileInfo

@@ -6,12 +6,12 @@
     <services>
         <defaults autowire="true" autoconfigure="true"/>
 
-        <prototype namespace="PBergman\AzureFileBundle\Command\" resource="../../Command/*">
+        <prototype namespace="PBergman\Bundle\AzureFileBundle\Command\" resource="../../Command/*">
             <tag name="console.command"/>
         </prototype>
 
         <prototype
-                namespace="PBergman\AzureFileBundle\"
+                namespace="PBergman\Bundle\AzureFileBundle\"
                 resource="../../*"
                 exclude="../../{DependencyInjection,CommandBackup}"
         />

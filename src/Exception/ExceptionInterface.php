@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PBergman\AzureFileBundle\Exception;
+namespace PBergman\Bundle\AzureFileBundle\Exception;
 
 interface ExceptionInterface
 {

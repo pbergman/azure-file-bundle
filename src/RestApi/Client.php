@@ -1,19 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace PBergman\AzureFileBundle\RestApi;
+namespace PBergman\Bundle\AzureFileBundle\RestApi;
 
-use PBergman\AzureFileBundle\Authorize\RequestAuthorizeInterface;
-use PBergman\AzureFileBundle\Authorize\RequestContext;
-use PBergman\AzureFileBundle\Model\ListResult;
-use PBergman\AzureFileBundle\Serializer\Encoder\ListXmlDecoder;
+use PBergman\Bundle\AzureFileBundle\Authorize\RequestAuthorizeInterface;
+use PBergman\Bundle\AzureFileBundle\Authorize\RequestContext;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpClient\Retry\GenericRetryStrategy;
 use Symfony\Component\HttpClient\RetryableHttpClient;
-use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
-use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 use Symfony\Contracts\HttpClient\ResponseStreamInterface;

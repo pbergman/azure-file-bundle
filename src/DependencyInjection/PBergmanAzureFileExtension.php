@@ -1,15 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace PBergman\AzureFileBundle\DependencyInjection;
+namespace PBergman\Bundle\AzureFileBundle\DependencyInjection;
 
-use PBergman\AzureFileBundle\Authorize\SharedKeyLiteAuthorizer;
-use PBergman\AzureFileBundle\Command\GetCommand;
-use PBergman\AzureFileBundle\Command\ListCommand;
-use PBergman\AzureFileBundle\RestApi\Client;
-use PBergman\AzureFileBundle\RestApi\FileApi;
-use PBergman\AzureFileBundle\RestApi\FileApiRegistry;
-use PBergman\AzureFileBundle\Util\MimeTypeGuesser;
+use PBergman\Bundle\AzureFileBundle\Authorize\SharedKeyLiteAuthorizer;
+use PBergman\Bundle\AzureFileBundle\Command\GetCommand;
+use PBergman\Bundle\AzureFileBundle\Command\ListCommand;
+use PBergman\Bundle\AzureFileBundle\RestApi\Client;
+use PBergman\Bundle\AzureFileBundle\RestApi\FileApi;
+use PBergman\Bundle\AzureFileBundle\RestApi\FileApiRegistry;
+use PBergman\Bundle\AzureFileBundle\Util\MimeTypeGuesser;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;

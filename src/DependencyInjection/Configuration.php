@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PBergman\AzureFileBundle\DependencyInjection;
+namespace PBergman\Bundle\AzureFileBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;

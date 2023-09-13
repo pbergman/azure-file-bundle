@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace PBergman\AzureFileBundle\RestApi;
+namespace PBergman\Bundle\AzureFileBundle\RestApi;
 
-use PBergman\AzureFileBundle\Exception\ListResponseException;
-use PBergman\AzureFileBundle\Model\FileMeta;
-use PBergman\AzureFileBundle\Model\FileResponse;
-use PBergman\AzureFileBundle\Model\ListResult;
-use PBergman\AzureFileBundle\Serializer\Encoder\ListXmlDecoder;
+use PBergman\Bundle\AzureFileBundle\Exception\ListResponseException;
+use PBergman\Bundle\AzureFileBundle\Model\FileMeta;
+use PBergman\Bundle\AzureFileBundle\Model\FileResponse;
+use PBergman\Bundle\AzureFileBundle\Model\ListResult;
+use PBergman\Bundle\AzureFileBundle\Serializer\Encoder\ListXmlDecoder;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
