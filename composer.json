@@ -1,0 +1,29 @@
+{
+    "name": "pbergman/azure-file-bundle",
+    "description": "symfony bundle for azure file integrations to easy access files on azure environment",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Philip Bergman",
+            "email": "pbergman@live.nl"
+        }
+    ],
+    "require": {
+        "php": "^7.4||^8.0",
+        "symfony/cache-contracts": "^1.1||^2.4||^3.0",
+        "symfony/http-client-contracts": "^1.1||^2.4||^3.0",
+        "symfony/config": "^4.4||^5.0||^6.0",
+        "symfony/console": "^4.4||^5.0||^6.0",
+        "symfony/dependency-injection": "^4.4||^5.0||^6.0",
+        "symfony/event-dispatcher": "^4.4||^5.0||^6.0",
+        "symfony/http-kernel": "^4.4||^5.0||^6.0",
+        "symfony/serializer": "^4.4||^5.0||^6.0",
+        "symfony/polyfill-php80": "^1.22",
+        "symfony/psr-http-message-bridge": "^1.2||^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "PBergman\\Bundle\\AzureFileBundle\\": "src/"
+        }
+    }
+}
