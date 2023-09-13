@@ -10,7 +10,7 @@ class Configuration implements ConfigurationInterface
 {
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder('PBergman_azure_file');
+        $treeBuilder = new TreeBuilder('pbergman_azure_file');
         $rootNode    = $treeBuilder->getRootNode();
         $rootNode
             ->children()
