@@ -8,7 +8,6 @@ use PBergman\Bundle\AzureFileBundle\Command\GetCommand;
 use PBergman\Bundle\AzureFileBundle\Command\ListCommand;
 use PBergman\Bundle\AzureFileBundle\RestApi\Client;
 use PBergman\Bundle\AzureFileBundle\RestApi\FileApi;
-use PBergman\Bundle\AzureFileBundle\RestApi\FileApiRegistry;
 use PBergman\Bundle\AzureFileBundle\Util\MimeTypeGuesser;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -61,7 +60,7 @@ class PBergmanAzureFileExtension extends Extension
     private function createFileApiService(ContainerBuilder $container, Reference $auth, Reference $client, string $account, string $share, string $name, ?string $root = null)
     {
         $name = new UnicodeString($name);
-        $def  = $name->snake()->prepend('PBergman.azure_file.file_api.');
+        $def  = (string)$name->snake()->prepend('pbergman.azure_file.file_api.');
 
         if (null !== $root) {
             // check for slash in start and end of string and if not append, see
@@ -76,7 +75,7 @@ class PBergmanAzureFileExtension extends Extension
         }
 
         $baseUri    = sprintf('https://%s.file.core.windows.net/%s%s', $account, $share, $root);
-        $clientName = $name->snake()->ensureEnd('.client');
+        $clientName = (string)$name->snake()->ensureEnd('.client');
 
         $container
             ->register($clientName, ScopingHttpClient::class)
@@ -95,18 +94,18 @@ class PBergmanAzureFileExtension extends Extension
 
         $container
             ->getDefinition(ListCommand::class)
-            ->addMethodCall('register', [$name->toString(), new Reference($def->toString())]);
+            ->addMethodCall('register', [$name->toString(), new Reference($def)]);
 
         $container
             ->getDefinition(GetCommand::class)
-            ->addMethodCall('register', [$name->toString(), new Reference($def->toString())]);
+            ->addMethodCall('register', [$name->toString(), new Reference($def)]);
 
-        $container->registerAliasForArgument($def->toString(), FileApi::class, $name->camel()->ensureEnd('AzureFileApi')->toString());
+        $container->registerAliasForArgument($def, FileApi::class, (string)$name->camel()->ensureEnd('AzureFileApi'));
     }
 
     private function createFileApiAuthorizerService(ContainerBuilder $container, string $name, array $config): string
     {
-        $name = (new UnicodeString($name))->snake()->prepend('PBergman.azure_file.authorizer.');
+        $name = (string)(new UnicodeString($name))->snake()->prepend('pbergman.azure_file.authorizer.');
 
         if (false === $container->hasDefinition($name)) {
             $definition = new Definition(SharedKeyLiteAuthorizer::class, [$config['account'], $config['key']]);
@@ -114,17 +113,17 @@ class PBergmanAzureFileExtension extends Extension
             $container->setDefinition($name, $definition);
         }
 
-        return $name->toString();
+        return $name;
     }
 
     private function createFileApiClient(ContainerBuilder $container, Reference $auth, string $name): string
     {
-        $name = (new UnicodeString($name))->snake()->prepend('PBergman.azure_file.http_client_');
+        $name = (string)(new UnicodeString($name))->snake()->prepend('pbergman.azure_file.http_client_');
 
         $container
             ->register($name, Client::class)
             ->setArguments([new Reference('http_client'), $auth]);
 
-        return $name->toString();
+        return $name;
     }
 }
