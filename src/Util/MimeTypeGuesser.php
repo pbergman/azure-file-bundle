@@ -8,42 +8,58 @@ use Psr\Cache\CacheItemPoolInterface;
 class MimeTypeGuesser
 {
     private string $file;
-    private CacheItemPoolInterface $cache;
+    private ?CacheItemPoolInterface $cache;
 
-    public function __construct(CacheItemPoolInterface $PBergmanAzureFileCache, string $file)
+    public function __construct(string $file, ?CacheItemPoolInterface $azureFileCache = null)
     {
         $this->file  = $file;
-        $this->cache = $PBergmanAzureFileCache;
+        $this->cache = $azureFileCache;
     }
 
-    public function guess(string $path): ?string
+    public function guess(string $path, bool $force = false): ?string
     {
         if ("" === $extension = \pathinfo($path, \PATHINFO_EXTENSION)) {
             return null;
         }
 
-        return $this->getExtension($extension);
+        return $this->getExtension($extension, $force);
     }
 
-    private function getExtension(string $extension): ?string
+    private function getExtension(string $extension, bool $force = false): ?string
     {
-        $item = $this->cache->getItem('PBergman.mime_types');
+        return ((null !== $this->cache && false === $force) ? $this->readExtensionsFromCache() : $this->readExtensionsFromFile())[$extension] ?? null;
+    }
 
-        if (false === $item->isHit()) {
-            $fp   = fopen($this->file, 'r');
-            $list = [];
-
-            while (false !== $line = fgets($fp)) {
-                if (preg_match('/^(?:\s+)?(?!#)([^\s]+\/[^\s]+)\s+(.+)\n/', $line, $match)) {
-                    foreach (preg_split('/\s+/', $match[2]) as $extension) {
-                        $list[$extension] = $match[1];
-                    }
-                }
-            }
-
-            $this->cache->save($item->set($list));
+    public function readExtensionsFromFile(): array
+    {
+        if (false === $fp = fopen($this->file, 'r')) {
+            throw new \RuntimeException('Could not open "' . $this->file . '".')   ;
         }
 
-        return $item->get()[$extension] ?? null;
+        $list = [];
+
+        while (false !== $line = fgets($fp)) {
+            if (preg_match('/^(?:\s+)?(?!#)(\S+\/\S+)\s+(.+)\n/', $line, $match)) {
+                foreach (preg_split('/\s+/', $match[2]) as $extension) {
+                    $list[$extension] = $match[1];
+                }
+            }
+        }
+
+        \fclose($fp);
+        \ksort($list);
+
+        return $list;
+    }
+
+    private function readExtensionsFromCache(): array
+    {
+        $item = $this->cache->getItem('pbergman.mime_types');
+
+        if (false === $item->isHit()) {
+            $this->cache->save($item->set($this->readExtensionsFromFile()));
+        }
+
+        return $item->get() ?? [];
     }
 }

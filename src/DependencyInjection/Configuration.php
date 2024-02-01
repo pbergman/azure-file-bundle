@@ -15,6 +15,7 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->scalarNode('mime_types_file')
+                    ->info('For none linux systems a url can be used like: http://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types')
                     ->defaultValue('/etc/mime.types')
                 ->end()
                 ->arrayNode('shares')

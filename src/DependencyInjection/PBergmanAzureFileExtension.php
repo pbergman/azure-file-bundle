@@ -29,7 +29,7 @@ class PBergmanAzureFileExtension extends Extension
 
         $container
             ->getDefinition(MimeTypeGuesser::class)
-            ->setArgument(1, $config['mime_types_file']);
+            ->setArgument(0, $config['mime_types_file']);
 
         $sharesReferences = [];
         $clientReferences = [];

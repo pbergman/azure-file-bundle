@@ -37,7 +37,6 @@ class FileApi
         $this->serializer = $serializer;
     }
 
-
     /**
      * https://learn.microsoft.com/en-us/rest/api/storageservices/list-directories-and-files
      *
@@ -140,6 +139,19 @@ class FileApi
         );
     }
 
+    /**
+     * https://learn.microsoft.com/en-us/rest/api/storageservices/delete-file2
+     */
+    public function deleteFile(string $name): void
+    {
+        $this->checkResponse(
+            $this->client->request('DELETE', rawurlencode($name))
+        );
+    }
+
+    /**
+     * https://learn.microsoft.com/en-us/rest/api/storageservices/get-file
+     */
     public function getFile(string $name): FileResponse
     {
         return new FileResponse($this->checkResponse($this->client->request('GET', rawurlencode($name))), $this->client);
