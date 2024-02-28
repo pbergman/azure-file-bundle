@@ -22,6 +22,11 @@ class FileResponse implements \IteratorAggregate
         return $this->response;
     }
 
+    public function exists(): bool
+    {
+        return $this->getStatus() === 200;
+    }
+
     public function getStatus()
     {
         return $this->response->getInfo('status_code');

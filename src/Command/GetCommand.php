@@ -8,6 +8,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 class GetCommand extends Command
 {
@@ -34,7 +35,13 @@ class GetCommand extends Command
             throw new \RuntimeException('No directory defined for "' . $input->getArgument("directory") . '"');
         }
 
-        file_put_contents($input->getArgument('name'), (string)$api->getFile($input->getArgument('name')));
+        $file = $api->getFile($input->getArgument('name'));
+
+        if (false === $file->exists()) {
+            throw new FileNotFoundException(sprintf('File "%s" not found', $input->getArgument('name')), $file->getStatus());
+        }
+
+        file_put_contents($input->getArgument('name'), (string)$file);
 
         return 0;
     }

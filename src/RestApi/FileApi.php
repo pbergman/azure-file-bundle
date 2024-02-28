@@ -185,7 +185,7 @@ class FileApi
      */
     public function getFile(string $name): FileResponse
     {
-        return new FileResponse($this->checkResponse($this->client->request('GET', rawurlencode($name))), $this->client);
+        return new FileResponse($this->client->request('GET', rawurlencode($name)), $this->client);
     }
 
     public function getMeta(string $name): FileMeta
