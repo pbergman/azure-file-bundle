@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace PBergman\Bundle\AzureFileBundle\RestApi;
 
 use PBergman\Bundle\AzureFileBundle\Exception\ListResponseException;
+use PBergman\Bundle\AzureFileBundle\Exception\RemoveResponseException;
 use PBergman\Bundle\AzureFileBundle\Model\FileMeta;
 use PBergman\Bundle\AzureFileBundle\Model\FileResponse;
 use PBergman\Bundle\AzureFileBundle\Model\ListResult;
@@ -103,24 +104,39 @@ class FileApi
         return $list;
     }
 
+    private function parseErrorResponse(ResponseInterface $resp, ?string $default = null): ?array
+    {
+        if (0 !== strpos(($resp->getHeaders(false)['content-type'][0] ?? ''), 'application/xml')) {
+            return null;
+        }
+
+        $doc = new \DOMDocument();
+        $doc->loadXML($resp->getContent(false));
+
+        $err = null;
+        $msg = $default ?? 'Failed to fetch response';
+
+        if (($elements = $doc->getElementsByTagName('Code')) && $elements->count() > 0) {
+            $err = $elements->item(0)->textContent;
+        }
+        if (($elements = $doc->getElementsByTagName('Message')) && $elements->count() > 0) {
+            $msg = $elements->item(0)->textContent;
+        }
+
+        unset($doc);
+
+        return [$msg, $err];
+    }
+
     private function checkResponse(ResponseInterface $resp): ResponseInterface
     {
-        if (200 !== $resp->getStatusCode()) {
-            if (0 !== strpos(($resp->getHeaders(false)['content-type'][0] ?? ''), 'application/xml')) {
+        if (200 > $resp->getStatusCode()) {
+
+            if (null === ($err = $this->parseErrorResponse($resp, 'Failed to list directories and files'))) {
                 throw new ListResponseException('Failed to list directories and files', null, $resp);
             }
-            $doc = new \DOMDocument();
-            $doc->loadXML($resp->getContent(false));
-            $err = null;
-            $msg = 'Failed to list directories and files';
-            if (($elements = $doc->getElementsByTagName('Code')) && $elements->count() > 0) {
-                $err = $elements->item(0)->textContent;
-            }
-            if (($elements = $doc->getElementsByTagName('Message')) && $elements->count() > 0) {
-                $msg = $elements->item(0)->textContent;
-            }
-            unset($doc);
-            throw new ListResponseException($msg, $err, $resp);
+
+            throw new ListResponseException($err[0], $err[1], $resp);
         }
 
         return $resp;
@@ -142,11 +158,26 @@ class FileApi
     /**
      * https://learn.microsoft.com/en-us/rest/api/storageservices/delete-file2
      */
-    public function deleteFile(string $name): void
+    public function deleteFile(string ...$names): void
     {
-        $this->checkResponse(
-            $this->client->request('DELETE', rawurlencode($name))
-        );
+        $responses = [];
+
+        foreach ($names as $name) {
+            $responses[] = $this->client->request('DELETE', rawurlencode($name), ['user_data' => ['file' => $name]]);
+        }
+
+        foreach ($responses as $response) {
+            if ($response->getStatusCode() !== 202) {
+
+                $default = sprintf('Failed to remove file %s', $response->getInfo('user_data')['file']);
+
+                if (null === ($err = $this->parseErrorResponse($response, $default))) {
+                    throw new RemoveResponseException($default, null, $response);
+                }
+
+                throw new RemoveResponseException($err[0], $err[1], $response);
+            }
+        }
     }
 
     /**
