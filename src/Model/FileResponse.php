@@ -29,7 +29,7 @@ class FileResponse implements \IteratorAggregate
 
     public function getStatus()
     {
-        return $this->response->getInfo('status_code');
+        return $this->response->getInfo('http_code');
     }
 
     public function __toString(): string
