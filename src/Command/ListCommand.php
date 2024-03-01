@@ -41,17 +41,17 @@ class ListCommand extends Command
 
         $result = $this->list($api, null, $input->getOption('prefix'));
         $total  = count($result->getEntries());
+        $isVerbose = $output->isVerbose();
+
         $table  = new Table($output);
-        $table->setHeaders([
-            'name', 'size', 'etag', 'directory'
-        ]);
+        $table->setHeaders($isVerbose ? ['name', 'size', 'etag', 'created', 'updated', 'directory'] : ['name', 'size', 'etag', 'directory']);
 
         foreach ($result->getEntries() as $entry) {
 
-            $this->addRow($table, $entry, $input->getOption('recursive') ? $this->createPath($result, null) : null);
+            $this->addRow($table, $entry, $isVerbose, $input->getOption('recursive') ? $this->createPath($result, null) : null);
 
             if ($input->getOption('recursive') && $entry instanceof Directory) {
-                $this->recursive($table, $this->createPath($result, $entry), $input->getOption('prefix'), $api, $total);
+                $this->recursive($table, $isVerbose, $this->createPath($result, $entry), $input->getOption('prefix'), $api, $total);
             }
         }
 
@@ -61,14 +61,36 @@ class ListCommand extends Command
         return 0;
     }
 
-    private function addRow(Table $table, FileInfo $entry, ?string $path = null): void
+    private function addRow(Table $table, FileInfo $entry, bool $verbose, ?string $path = null): void
     {
-        $table->addRow([
-            (($path === null) ? $entry->getName() : $path . '/' . $entry->getName()),
-            $entry->getProperties()->getContentLength(),
-            $entry->getProperties()->getEtag(),
-            (($entry instanceof Directory) ? '✓' : '✗')
-        ]);
+        if ($verbose) {
+            $table->addRow([
+                (($path === null) ? $entry->getName() : $path . '/' . $entry->getName()),
+                $entry->getProperties()->getContentLength(),
+                $entry->getProperties()->getEtag(),
+                $this->fmtDateTime($entry->getProperties()->getCreationTime()),
+                $this->fmtDateTime($entry->getProperties()->getChangeTime()),
+                (($entry instanceof Directory) ? '✓' : '✗'),
+            ]);
+
+        }  else {
+            $table->addRow([
+                (($path === null) ? $entry->getName() : $path . '/' . $entry->getName()),
+                $entry->getProperties()->getContentLength(),
+                $entry->getProperties()->getEtag(),
+                (($entry instanceof Directory) ? '✓' : '✗'),
+            ]);
+        }
+
+    }
+
+    private function fmtDateTime(?\DateTimeInterface $date): string
+    {
+        if (null == $date) {
+            return '';
+        }
+
+        return $date->format(\DateTimeInterface::ATOM);
     }
 
     private function createPath(ListResult $result, ?FileInfo $fileInfo): string
@@ -78,20 +100,20 @@ class ListCommand extends Command
 
     private function list(FileApi $api, ?string $path = null, ?string $prefix = null): ListResult
     {
-        return $api->list($path, $prefix, null, false, FileApi::LIST_INCLUDE_ETAGS);
+        return $api->list($path, $prefix, null, false, FileApi::LIST_INCLUDE_TIMESTAMPS|FileApi::LIST_INCLUDE_ETAGS);
     }
 
-    private function recursive(Table $table, string $path, ?string $prefix, FileApi $api, int &$total): void
+    private function recursive(Table $table, bool $verbose, string $path, ?string $prefix, FileApi $api, int &$total): void
     {
         $result = $this->list($api, $path, $prefix);
         $total += count($result->getEntries());
 
         foreach ($result->getEntries() as $entry) {
 
-            $this->addRow($table, $entry, $path);
+            $this->addRow($table, $entry, $verbose, $path);
 
             if ($entry instanceof Directory) {
-                $this->recursive($table, $path . '/' . $entry->getName(), $prefix, $api, $total);
+                $this->recursive($table, $verbose, $path . '/' . $entry->getName(), $prefix, $api, $total);
             }
         }
     }
