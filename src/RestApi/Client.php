@@ -7,9 +7,6 @@ use PBergman\Bundle\AzureFileBundle\Authorize\RequestAuthorizeInterface;
 use PBergman\Bundle\AzureFileBundle\Authorize\RequestContext;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface as ContractHttpClientInterface;
-use Symfony\Component\HttpClient\Retry\GenericRetryStrategy;
-use Symfony\Component\HttpClient\RetryableHttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 use Symfony\Contracts\HttpClient\ResponseStreamInterface;
@@ -22,31 +19,12 @@ class Client implements HttpClientInterface, ResetInterface, LoggerAwareInterfac
 
     public function __construct(HttpClientInterface $client, RequestAuthorizeInterface $authorizer)
     {
-        $this->client     = $this->wrapClient($client);
+        $this->client     = $client;
         $this->authorizer = $authorizer;
-    }
-
-    private function wrapClient(HttpClientInterface $client): HttpClientInterface
-    {
-        if ($client instanceof RetryableHttpClient) {
-            return $client;
-        }
-
-        $codes = GenericRetryStrategy::DEFAULT_RETRY_STATUS_CODES;
-
-        unset(
-            $codes[500]
-        );
-
-        $codes[] = 401;
-        $codes[] = 500;
-
-        return new RetryableHttpClient($client, new GenericRetryStrategy($codes, 700), 4);
     }
 
     public function request(string $method, string $url, array $options = []): ResponseInterface
     {
-
         if (false === array_key_exists('headers', $options)) {
             $options['headers'] = [];
         }
@@ -68,7 +46,7 @@ class Client implements HttpClientInterface, ResetInterface, LoggerAwareInterfac
         }
     }
 
-    public function withOptions(array $options): ContractHttpClientInterface
+    public function withOptions(array $options): static
     {
         $clone = clone $this;
         $clone->client = $this->client->withOptions($options);

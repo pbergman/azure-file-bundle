@@ -36,7 +36,7 @@ class PBergmanAzureFileExtension extends Extension
 
         foreach ($config['shares'] as $id => $share) {
             $sharesReferences[$id] = new Reference($this->createFileApiAuthorizerService($container, $id, $share));
-            $clientReferences[$id] = new Reference($this->createFileApiClient($container, $sharesReferences[$id], $id));
+            $clientReferences[$id] = new Reference($this->createFileApiClient($container, $sharesReferences[$id], $id, $config['http_client']));
         }
 
         foreach ($config['directories'] as $id => $info) {
@@ -116,13 +116,13 @@ class PBergmanAzureFileExtension extends Extension
         return $name;
     }
 
-    private function createFileApiClient(ContainerBuilder $container, Reference $auth, string $name): string
+    private function createFileApiClient(ContainerBuilder $container, Reference $auth, string $name, string $reference): string
     {
         $name = (string)(new UnicodeString($name))->snake()->prepend('pbergman.azure_file.http_client_');
 
         $container
             ->register($name, Client::class)
-            ->setArguments([new Reference('http_client'), $auth]);
+            ->setArguments([new Reference($reference), $auth]);
 
         return $name;
     }
