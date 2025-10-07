@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace PBergman\Bundle\AzureFileBundle\Model;
 
-use Symfony\Component\Serializer\Annotation\SerializedName;
+use Symfony\Component\Serializer\Attribute\SerializedName;
 
 class ListResult implements \IteratorAggregate
 {
@@ -17,26 +17,17 @@ class ListResult implements \IteratorAggregate
 
     private ?string $directoryId = null;
 
-    /**
-     * @SerializedName("@ServiceEndpoint")
-     */
+    #[SerializedName('@ServiceEndpoint')]
     private ?string $serviceEndpoint = null;
 
-    /**
-     * @SerializedName("@ShareName")
-     */
+    #[SerializedName('@ShareName')]
     private ?string $shareName = null;
 
-    /**
-     * @SerializedName("@ShareSnapshot")
-     */
+    #[SerializedName('@ShareSnapshot')]
     private ?string $shareSnapshot = null;
 
-    /**
-     * @SerializedName("@DirectoryPath")
-     */
+    #[SerializedName('@DirectoryPath')]
     private ?string $directoryPath = null;
-
 
     /**
      * @var array<FileInfo>|null

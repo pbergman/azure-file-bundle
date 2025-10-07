@@ -17,7 +17,7 @@ class ListXmlDecoder implements ContextAwareDecoderInterface, NormalizationAware
         return $this->read($reader);
     }
 
-    private function read(\XMLReader $reader): ?string
+    private function read(\XMLReader $reader): string|array|null
     {
         $value = null;
         while ($reader->read()) {

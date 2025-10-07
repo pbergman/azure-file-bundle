@@ -34,7 +34,7 @@ class Client implements HttpClientInterface, ResetInterface, LoggerAwareInterfac
         return $this->client->request($method, $url, $options);
     }
 
-    public function stream($responses, float $timeout = null): ResponseStreamInterface
+    public function stream($responses, ?float $timeout = null): ResponseStreamInterface
     {
         return $this->client->stream($responses, $timeout);
     }

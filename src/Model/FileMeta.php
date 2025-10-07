@@ -3,15 +3,14 @@ declare(strict_types=1);
 
 namespace PBergman\Bundle\AzureFileBundle\Model;
 
-use Symfony\Component\Serializer\Annotation\SerializedName;
+use Symfony\Component\Serializer\Attribute\SerializedName;
 
 class FileMeta extends FileInfoProperties
 {
     private ?string $type;
 
-    /**
-     * @SerializedName("Content-Type")
-     */
+
+    #[SerializedName('Content-Type')]
     private ?string $contentType;
 
     public function getType(): ?string

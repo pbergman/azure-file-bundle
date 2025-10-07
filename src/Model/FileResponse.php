@@ -29,7 +29,11 @@ class FileResponse implements \IteratorAggregate
 
     public function getStatus(): int
     {
-        return (int)$this->response->getInfo('http_code');
+        try {
+            return $this->response->getStatusCode();
+        } catch (\Throwable $exception) {
+            return -1;
+        }
     }
 
     public function __toString(): string
@@ -42,7 +46,7 @@ class FileResponse implements \IteratorAggregate
         $this->response->cancel();
     }
 
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         foreach ($this->client->stream($this->response) as $chunk) {
             yield $chunk->getContent();

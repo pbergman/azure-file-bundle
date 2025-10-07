@@ -25,8 +25,8 @@ class ListCommand
     public function __invoke(
         SymfonyStyle $io,
         #[Argument(description: 'Directory name used in config.', suggestedValues: [self::class, 'getDirectories'])] string $directory,
-        #[Option(description: 'Print recursive files.', shortcut: 'r')] bool $recursive,
-        #[Option(description: 'Search for given prefix.', shortcut: 'p')] ?string $prefix,
+        #[Option(description: 'Print recursive files.', shortcut: 'r')] bool $recursive = false,
+        #[Option(description: 'Search for given prefix.', shortcut: 'p')] ?string $prefix = null,
     ): int
     {
 
@@ -38,6 +38,7 @@ class ListCommand
             $isVerbose = $io->isVerbose();
 
             $table  = $io->createTable();
+            $table->setStyle($isVerbose ? 'compact' : 'default');
             $table->setHeaders($isVerbose ? ['name', 'size', 'etag', 'created', 'updated', 'directory'] : ['name', 'size', 'etag', 'directory']);
 
             foreach ($result->getEntries() as $entry) {

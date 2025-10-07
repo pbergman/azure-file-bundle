@@ -22,7 +22,7 @@ class ListXmlNormalizer implements DenormalizerInterface
         return $type === ListResult::class && $format === ListXmlDecoder::FORMAT && $data !== null;
     }
 
-    public function denormalize($data, $type, $format = null, array $context = []): array
+    public function denormalize($data, $type, $format = null, array $context = []): ListResult
     {
         $object = &$data['EnumerationResults'];
 
