@@ -27,9 +27,9 @@ class FileResponse implements \IteratorAggregate
         return $this->getStatus() === 200;
     }
 
-    public function getStatus()
+    public function getStatus(): int
     {
-        return $this->response->getInfo('http_code');
+        return (int)$this->response->getInfo('http_code');
     }
 
     public function __toString(): string

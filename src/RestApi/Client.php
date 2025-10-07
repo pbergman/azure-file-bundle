@@ -7,6 +7,7 @@ use PBergman\Bundle\AzureFileBundle\Authorize\RequestAuthorizeInterface;
 use PBergman\Bundle\AzureFileBundle\Authorize\RequestContext;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface as ContractHttpClientInterface;
 use Symfony\Component\HttpClient\Retry\GenericRetryStrategy;
 use Symfony\Component\HttpClient\RetryableHttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -67,14 +68,14 @@ class Client implements HttpClientInterface, ResetInterface, LoggerAwareInterfac
         }
     }
 
-    public function withOptions(array $options): self
+    public function withOptions(array $options): ContractHttpClientInterface
     {
         $clone = clone $this;
         $clone->client = $this->client->withOptions($options);
         return $clone;
     }
 
-    public function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger): void
     {
         if ($this->client instanceof LoggerAwareInterface) {
             $this->client->setLogger($logger);

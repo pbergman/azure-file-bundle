@@ -4,45 +4,45 @@ declare(strict_types=1);
 namespace PBergman\Bundle\AzureFileBundle\Command;
 
 use PBergman\Bundle\AzureFileBundle\RestApi\FileApi;
+use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Filesystem\Exception\FileNotFoundException;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
-class GetCommand extends Command
+#[AsCommand(
+    name: 'azure:directory:get-file',
+    description: 'Download file from remote azure environment.'
+)]
+class GetCommand
 {
-    protected static $defaultName = 'azure:directory:get-file';
+    use ApiRegistryTrait;
 
-    private array $registry;
-
-    public function register($name, FileApi $api)
+    public function __invoke(
+        SymfonyStyle $io,
+        #[Argument(description: 'Directory name used in config.', suggestedValues: [self::class, 'getDirectories'])] string $directory,
+        #[Argument('The File to download.')] string $name, OutputInterface $output
+    ): int
     {
-        $this->registry[$name] = $api;
-    }
+        try {
 
-    protected function configure()
-    {
-        $this
-            ->addArgument('directory', InputArgument::REQUIRED, 'Directory name used in config')
-            ->addArgument('name', InputArgument::REQUIRED, 'The File to download');
-    }
+            $api  = $this->getApiForDirectory($directory);
+            $file = $api->getFile($name);
 
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        /** @var FileApi $api  */
-        if (null === $api = ($this->registry[$input->getArgument("directory")] ?? null)) {
-            throw new \RuntimeException('No directory defined for "' . $input->getArgument("directory") . '"');
+            if (false === $file->exists()) {
+                throw new \RuntimeException(sprintf('<error>File "%s" not found (status: %d)</error>', $name, $file->getStatus()));
+            }
+
+            if (false === \file_put_contents($name, (string)$file)) {
+                throw new \RuntimeException(sprintf('<error>Could not save file "%s"</error>', $name));
+            }
+
+            return Command::SUCCESS;
+
+        } catch (\Throwable $exception) {
+            $io->error($exception->getMessage());
+            return Command::FAILURE;
         }
 
-        $file = $api->getFile($input->getArgument('name'));
-
-        if (false === $file->exists()) {
-            throw new FileNotFoundException(sprintf('File "%s" not found', $input->getArgument('name')), $file->getStatus());
-        }
-
-        file_put_contents($input->getArgument('name'), (string)$file);
-
-        return 0;
     }
 }

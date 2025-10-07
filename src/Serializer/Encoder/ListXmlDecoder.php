@@ -10,14 +10,14 @@ class ListXmlDecoder implements ContextAwareDecoderInterface, NormalizationAware
 {
     const FORMAT = 'xml+windows-azure-file';
 
-    public function decode($data, $format, array $context = [])
+    public function decode($data, $format, array $context = []): mixed
     {
         $reader = new \XMLReader();
         $reader->xml($data);
         return $this->read($reader);
     }
 
-    private function read(\XMLReader $reader)
+    private function read(\XMLReader $reader): ?string
     {
         $value = null;
         while ($reader->read()) {

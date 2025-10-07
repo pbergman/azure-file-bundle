@@ -5,10 +5,10 @@ namespace PBergman\Bundle\AzureFileBundle\Serializer\Normalizer;
 
 use PBergman\Bundle\AzureFileBundle\Model\ListResult;
 use PBergman\Bundle\AzureFileBundle\Serializer\Encoder\ListXmlDecoder;
-use Symfony\Component\Serializer\Normalizer\ContextAwareDenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
-class ListXmlNormalizer implements ContextAwareDenormalizerInterface
+class ListXmlNormalizer implements DenormalizerInterface
 {
     private ObjectNormalizer $normalizer;
 
@@ -17,12 +17,12 @@ class ListXmlNormalizer implements ContextAwareDenormalizerInterface
         $this->normalizer = $normalizer;
     }
 
-    public function supportsDenormalization($data, $type, $format = null, array $context = [])
+    public function supportsDenormalization($data, $type, $format = null, array $context = []): bool
     {
-        return $type === ListResult::class && $format === ListXmlDecoder::FORMAT;
+        return $type === ListResult::class && $format === ListXmlDecoder::FORMAT && $data !== null;
     }
 
-    public function denormalize($data, $type, $format = null, array $context = [])
+    public function denormalize($data, $type, $format = null, array $context = []): array
     {
         $object = &$data['EnumerationResults'];
 
@@ -35,5 +35,10 @@ class ListXmlNormalizer implements ContextAwareDenormalizerInterface
         }
 
         return $this->normalizer->denormalize($object, $type, $format, $context);
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [ListResult::class => true];
     }
 }
