@@ -3,20 +3,19 @@ declare(strict_types=1);
 
 namespace PBergman\Bundle\AzureFileBundle\Model;
 
-use Symfony\Component\Serializer\Annotation\DiscriminatorMap;
-use Symfony\Component\Serializer\Annotation\SerializedName;
+use Symfony\Component\Serializer\Attribute\DiscriminatorMap;
+use Symfony\Component\Serializer\Attribute\SerializedName;
 
-/**
- * @DiscriminatorMap(typeProperty="Type", mapping={
- *    "File"      = "PBergman\Bundle\AzureFileBundle\Model\File",
- *    "Directory" = "PBergman\Bundle\AzureFileBundle\Model\Directory"
- * })
- */
+#[DiscriminatorMap(
+    typeProperty: "Type",
+    mapping: [
+        'File'      => 'PBergman\Bundle\AzureFileBundle\Model\File',
+        'Directory' => 'PBergman\Bundle\AzureFileBundle\Model\Directory'
+    ]
+)]
 abstract class FileInfo
 {
-    /**
-     * @SerializedName("FileId")
-     */
+    #[SerializedName('FileId')]
     private string $id;
 
     private ?string $name;

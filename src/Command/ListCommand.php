@@ -7,58 +7,57 @@ use PBergman\Bundle\AzureFileBundle\Model\Directory;
 use PBergman\Bundle\AzureFileBundle\Model\FileInfo;
 use PBergman\Bundle\AzureFileBundle\Model\ListResult;
 use PBergman\Bundle\AzureFileBundle\RestApi\FileApi;
+use Symfony\Component\Console\Attribute\Argument;
+use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Attribute\Option;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
-class ListCommand extends Command
+#[AsCommand(
+    name: 'azure:directory:list',
+    description: 'Get files by path fom remote azure environment',
+)]
+class ListCommand
 {
-    protected static $defaultName = 'azure:directory:list';
+    use ApiRegistryTrait;
 
-    private array $registry;
-
-    public function register($name, FileApi $api)
+    public function __invoke(
+        SymfonyStyle $io,
+        #[Argument(description: 'Directory name used in config.', suggestedValues: [self::class, 'getDirectories'])] string $directory,
+        #[Option(description: 'Print recursive files.', shortcut: 'r')] bool $recursive = false,
+        #[Option(description: 'Search for given prefix.', shortcut: 'p')] ?string $prefix = null,
+    ): int
     {
-        $this->registry[$name] = $api;
-    }
 
-    protected function configure()
-    {
-        $this
-            ->addArgument('directory', InputArgument::REQUIRED, 'Directory name used in config')
-            ->addOption('recursive', 'r', InputOption::VALUE_NONE, 'Print recursive files')
-            ->addOption('prefix', 'p', InputOption::VALUE_REQUIRED, 'Search for given prefix');
-    }
+        try {
 
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        if (null === $api = ($this->registry[$input->getArgument("directory")] ?? null)) {
-            throw new \RuntimeException('No directory defined for "' . $input->getArgument("directory") . '"');
-        }
+            $api       = $this->getApiForDirectory($directory);
+            $result    = $this->list($api, null, $prefix);
+            $total     = \count($result->getEntries());
+            $isVerbose = $io->isVerbose();
 
-        $result = $this->list($api, null, $input->getOption('prefix'));
-        $total  = count($result->getEntries());
-        $isVerbose = $output->isVerbose();
+            $table  = $io->createTable();
+            $table->setStyle($isVerbose ? 'compact' : 'default');
+            $table->setHeaders($isVerbose ? ['name', 'size', 'etag', 'created', 'updated', 'directory'] : ['name', 'size', 'etag', 'directory']);
 
-        $table  = new Table($output);
-        $table->setHeaders($isVerbose ? ['name', 'size', 'etag', 'created', 'updated', 'directory'] : ['name', 'size', 'etag', 'directory']);
+            foreach ($result->getEntries() as $entry) {
 
-        foreach ($result->getEntries() as $entry) {
+                $this->addRow($table, $entry, $isVerbose, $recursive ? $this->createPath($result, null) : null);
 
-            $this->addRow($table, $entry, $isVerbose, $input->getOption('recursive') ? $this->createPath($result, null) : null);
-
-            if ($input->getOption('recursive') && $entry instanceof Directory) {
-                $this->recursive($table, $isVerbose, $this->createPath($result, $entry), $input->getOption('prefix'), $api, $total);
+                if ($recursive && $entry instanceof Directory) {
+                    $this->recursive($table, $isVerbose, $this->createPath($result, $entry), $prefix, $api, $total);
+                }
             }
+
+            $table->setHeaderTitle(sprintf('[share: %s | path: %s | total files: %d]', $result->getShareName(), $result->getDirectoryPath(), $total));
+            $table->render();
+
+            return Command::SUCCESS;
+        } catch (\Throwable $exception) {
+            $io->error($exception->getMessage());
+            return Command::FAILURE;
         }
-
-        $table->setHeaderTitle(sprintf('[share: %s | path: %s | total files: %d]', $result->getShareName(), $result->getDirectoryPath(), $total));
-        $table->render();
-
-        return 0;
     }
 
     private function addRow(Table $table, FileInfo $entry, bool $verbose, ?string $path = null): void

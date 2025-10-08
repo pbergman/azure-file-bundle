@@ -21,7 +21,7 @@ use Symfony\Component\String\UnicodeString;
 
 class PBergmanAzureFileExtension extends Extension
 {
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $loader = new XmlFileLoader($container, new FileLocator(dirname(__FILE__, 2) . '/Resources/config'));
         $loader->load('services.xml');
@@ -36,7 +36,7 @@ class PBergmanAzureFileExtension extends Extension
 
         foreach ($config['shares'] as $id => $share) {
             $sharesReferences[$id] = new Reference($this->createFileApiAuthorizerService($container, $id, $share));
-            $clientReferences[$id] = new Reference($this->createFileApiClient($container, $sharesReferences[$id], $id));
+            $clientReferences[$id] = new Reference($this->createFileApiClient($container, $sharesReferences[$id], $id, $config['http_client']));
         }
 
         foreach ($config['directories'] as $id => $info) {
@@ -57,7 +57,7 @@ class PBergmanAzureFileExtension extends Extension
         }
     }
 
-    private function createFileApiService(ContainerBuilder $container, Reference $auth, Reference $client, string $account, string $share, string $name, ?string $root = null)
+    private function createFileApiService(ContainerBuilder $container, Reference $auth, Reference $client, string $account, string $share, string $name, ?string $root = null): void
     {
         $name = new UnicodeString($name);
         $def  = (string)$name->snake()->prepend('pbergman.azure_file.file_api.');
@@ -116,13 +116,13 @@ class PBergmanAzureFileExtension extends Extension
         return $name;
     }
 
-    private function createFileApiClient(ContainerBuilder $container, Reference $auth, string $name): string
+    private function createFileApiClient(ContainerBuilder $container, Reference $auth, string $name, string $reference): string
     {
         $name = (string)(new UnicodeString($name))->snake()->prepend('pbergman.azure_file.http_client_');
 
         $container
             ->register($name, Client::class)
-            ->setArguments([new Reference('http_client'), $auth]);
+            ->setArguments([new Reference($reference), $auth]);
 
         return $name;
     }

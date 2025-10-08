@@ -183,7 +183,7 @@ class FileApi
     /**
      * https://learn.microsoft.com/en-us/rest/api/storageservices/get-file
      */
-    public function getFile(string $name): FileResponse
+    public function getFile(string $name): ?FileResponse
     {
         return new FileResponse($this->client->request('GET', rawurlencode($name)), $this->client);
     }

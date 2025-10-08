@@ -8,7 +8,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 class Configuration implements ConfigurationInterface
 {
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('pbergman_azure_file');
         $rootNode    = $treeBuilder->getRootNode();
@@ -17,6 +17,9 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('mime_types_file')
                     ->info('For none linux systems a url can be used like: http://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types')
                     ->defaultValue('/etc/mime.types')
+                ->end()
+                ->scalarNode('http_client')
+                    ->defaultValue('http_client')
                 ->end()
                 ->arrayNode('shares')
                     ->useAttributeAsKey('share')

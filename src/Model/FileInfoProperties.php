@@ -3,38 +3,26 @@ declare(strict_types=1);
 
 namespace PBergman\Bundle\AzureFileBundle\Model;
 
-use Symfony\Component\Serializer\Annotation\SerializedName;
+use Symfony\Component\Serializer\Attribute\SerializedName;
 
 class FileInfoProperties
 {
-    /**
-     * @SerializedName("Content-Length")
-     */
+    #[SerializedName('Content-Length')]
     private ?int $contentLength = null;
-
-    /**
-     * @SerializedName("CreationTime")
-     */
+    
+    #[SerializedName('CreationTime')]
     private ?\DateTimeInterface $creationTime;
 
-    /**
-     * @SerializedName("LastAccessTime")
-     */
+    #[SerializedName('LastAccessTime')]
     private ?\DateTimeInterface $lastAccessTime;
 
-    /**
-     * @SerializedName("LastWriteTime")
-     */
+    #[SerializedName('LastWriteTime')]
     private ?\DateTimeInterface $lastWriteTime;
 
-    /**
-     * @SerializedName("ChangeTime")
-     */
+    #[SerializedName('ChangeTime')]
     private ?\DateTimeInterface $changeTime;
 
-    /**
-     * @SerializedName("Last-Modified")
-     */
+    #[SerializedName('Last-Modified')]
     private ?\DateTimeInterface $lastModified;
 
     private ?string $etag = null;
